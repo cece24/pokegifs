@@ -6,6 +6,10 @@ class PokemonController < ApplicationController
     pokemon_data = JSON.parse(pokemon_response.body)
     puts pokemon_data["name"]
 
+    giphy_response = HTTParty.get("http://api.giphy.com/v1/gifs/search?api_key=#{ ENV["GIPHY_KEY"] }&q=#{ params[:id] }&rating=g")
+    giphy_data = JSON.parse(giphy_response.body)
+    puts giphy_data
+
     render json: {
       id: pokemon_data["id"],
       name: pokemon_data["name"],
