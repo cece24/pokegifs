@@ -35,9 +35,26 @@ class PokemonController < ApplicationController
     # define empty team array {}
     pokemon_team = []
     # 6 times, generate random number (within range) and make request to pokemon api, add pokemon into team as hash
+    # within times loop, make giphy request and add gif to each pokemon
+    6.times do
+      random_id = rand(1..120)
+      pokemon_response = HTTParty.get("http://pokeapi.co/api/v2/pokemon/#{ random_id }")
+      pokemon_data = JSON.parse(pokemon_response.body)
 
-    # iterate through team hash, for every pokemon, make giphy request and add gif to each pokemon
+      giphy_response = HTTParty.get("http://api.giphy.com/v1/gifs/random?api_key=#{ ENV["GIPHY_KEY"] }&tag=#{ pokemon_data["name"] }&rating=g")
+      giphy_data = JSON.parse(giphy_response.body)
+
+      pokemon_team << {
+        id: pokemon_data["id"],
+        name: pokemon_data["name"],
+        types: pokemon_data["types"].map { |single_type|
+            single_type["type"]["name"]
+          },
+        gif: giphy_data["data"]["image_url"]
+        }
+    end
+    puts pokemon_team
     # render team hash as json
-    render json: { "message": "ok" }
+    render json: { team: pokemon_team }
   end
 end
