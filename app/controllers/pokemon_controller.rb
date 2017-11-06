@@ -9,17 +9,23 @@ class PokemonController < ApplicationController
       puts pokemon_data["name"]
 
       giphy_response = HTTParty.get("http://api.giphy.com/v1/gifs/random?api_key=#{ ENV["GIPHY_KEY"] }&tag=#{ pokemon_data["name"] }&rating=g")
-      giphy_data = JSON.parse(giphy_response.body)
-      puts giphy_data["data"]["image_url"]
 
-      render json: {
-        id: pokemon_data["id"],
-        name: pokemon_data["name"],
-        types: pokemon_data["types"].map { |single_type|
-            single_type["type"]["name"]
-          },
-        gif: giphy_data["data"]["image_url"]
-      }
+      if giphy_response.code == 200
+        giphy_data = JSON.parse(giphy_response.body)
+        puts giphy_data["data"]["image_url"]
+
+        render json: {
+          id: pokemon_data["id"],
+          name: pokemon_data["name"],
+          types: pokemon_data["types"].map { |single_type|
+              single_type["type"]["name"]
+            },
+          gif: giphy_data["data"]["image_url"]
+        }
+      elsif giphy_response.code == 403
+        render :plain => 'Forbidden', :status => '403'
+      end
+
     else
       render :plain => 'Not Found', :status => '404'
     end
