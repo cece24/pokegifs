@@ -30,4 +30,14 @@ class PokemonController < ApplicationController
       render :plain => 'Not Found', :status => '404'
     end
   end
+
+  def team
+    # define empty team array {}
+    pokemon_team = []
+    # 6 times, generate random number (within range) and make request to pokemon api, add pokemon into team as hash
+
+    # iterate through team hash, for every pokemon, make giphy request and add gif to each pokemon
+    # render team hash as json
+    render json: { "message": "ok" }
+  end
 end
